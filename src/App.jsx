@@ -1,34 +1,29 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 
-const Placeholder = ({ title }) => {
-  return (
-    <section className="mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4">
-      <h1 className="text-3xl font-bold text-slate-800">{title}</h1>
-    </section>
-  );
-};
+import Home from "./pages/public/Home";
+import Products from "./pages/public/Products";
+import ProductDetails from "./pages/public/ProductDetails";
+import Categories from "./pages/public/Categories";
+import About from "./pages/public/About";
+import Contact from "./pages/public/Contact";
+
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<Placeholder title="ReSell Hub Home" />} />
-          <Route
-            path="/products"
-            element={<Placeholder title="All Products" />}
-          />
-          <Route
-            path="/categories"
-            element={<Placeholder title="Categories" />}
-          />
-          <Route
-            path="/dashboard"
-            element={<Placeholder title="Dashboard" />}
-          />
-          <Route path="/login" element={<Placeholder title="Login" />} />
-          <Route path="/about" element={<Placeholder title="About Us" />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
       </Routes>
     </BrowserRouter>

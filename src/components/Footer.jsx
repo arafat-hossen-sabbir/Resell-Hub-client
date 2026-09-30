@@ -61,6 +61,9 @@ const Footer = () => {
             <Link to="/about" className="transition hover:text-emerald-400">
               About Us
             </Link>
+            <Link to="/contact" className="transition hover:text-emerald-400">
+              Contact Us
+            </Link>
           </div>
         </div>
 

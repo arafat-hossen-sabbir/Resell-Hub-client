@@ -119,4 +119,64 @@ export const products = [
     image:
       "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
   },
+  {
+    id: "9",
+    title: "Samsung Galaxy S22",
+    category: "Mobile Phones",
+    condition: "Like New",
+    price: 38000,
+    rating: 4.8,
+    reviews: 19,
+    location: "Dhaka",
+    seller: "Rifat Chowdhury",
+    description:
+      "Samsung Galaxy S22 with excellent performance, display quality and camera. Comes with the original box and charger.",
+    image:
+      "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "10",
+    title: "Modern Office Chair",
+    category: "Furniture",
+    condition: "Like New",
+    price: 6500,
+    rating: 4.6,
+    reviews: 11,
+    location: "Dhaka",
+    seller: "Fahim Rahman",
+    description:
+      "Comfortable ergonomic office chair suitable for studying and working from home.",
+    image:
+      "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "11",
+    title: "Gaming Desk",
+    category: "Furniture",
+    condition: "Good",
+    price: 9500,
+    rating: 4.4,
+    reviews: 8,
+    location: "Noakhali",
+    seller: "Shakil Ahmed",
+    description:
+      "Spacious gaming and computer desk with a clean modern design and plenty of space for a full setup.",
+    image:
+      "https://images.unsplash.com/photo-1617098900591-3f90928e8c54?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "12",
+    title: "Leather Backpack",
+    category: "Fashion",
+    condition: "Like New",
+    price: 3200,
+    rating: 4.5,
+    reviews: 16,
+    location: "Dhaka",
+    seller: "Adnan Kabir",
+    description:
+      "Stylish and durable backpack with enough space for books, a laptop and daily essentials.",
+    image:
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80",
+  },
 ];

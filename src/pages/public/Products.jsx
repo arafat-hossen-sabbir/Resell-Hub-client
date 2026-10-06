@@ -1,14 +1,21 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, SlidersHorizontal } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  SlidersHorizontal,
+} from "lucide-react";
 import ProductCard from "../../components/products/ProductCard";
 import { products } from "../../data/products";
 
 const categories = ["All", ...new Set(products.map((p) => p.category))];
+const PRODUCTS_PER_PAGE = 8;
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sort, setSort] = useState("default");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const search = searchParams.get("search") || "";
   const category = searchParams.get("category") || "All";
@@ -21,6 +28,7 @@ const Products = () => {
       next.delete(key);
     }
     setSearchParams(next, { replace: true });
+    setCurrentPage(1);
   };
 
   const filteredProducts = useMemo(() => {
@@ -48,9 +56,22 @@ const Products = () => {
     return result;
   }, [search, category, sort]);
 
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const currentProducts = filteredProducts.slice(
+    startIndex,
+    startIndex + PRODUCTS_PER_PAGE,
+  );
+
+  // Scroll to top whenever the page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   const clearFilters = () => {
     setSearchParams({}, { replace: true });
     setSort("default");
+    setCurrentPage(1);
   };
 
   return (
@@ -108,7 +129,10 @@ const Products = () => {
 
             <select
               value={sort}
-              onChange={(e) => setSort(e.target.value)}
+              onChange={(e) => {
+                setSort(e.target.value);
+                setCurrentPage(1);
+              }}
               className="rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-emerald-500"
             >
               <option value="default">Sort by Price</option>
@@ -121,6 +145,10 @@ const Products = () => {
         <div className="mt-8 flex items-center justify-between">
           <p className="text-sm text-slate-500">
             Showing{" "}
+            <span className="font-semibold text-slate-800">
+              {currentProducts.length}
+            </span>{" "}
+            of{" "}
             <span className="font-semibold text-slate-800">
               {filteredProducts.length}
             </span>{" "}
@@ -138,9 +166,9 @@ const Products = () => {
           )}
         </div>
 
-        {filteredProducts.length > 0 ? (
+        {currentProducts.length > 0 ? (
           <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {filteredProducts.map((product) => (
+            {currentProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
@@ -153,6 +181,49 @@ const Products = () => {
             <p className="mt-2 text-slate-500">
               Try another search term or category.
             </p>
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => p - 1)}
+              disabled={currentPage === 1}
+              aria-label="Previous page"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, index) => {
+              const page = index + 1;
+
+              return (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => setCurrentPage(page)}
+                  className={`h-10 w-10 rounded-lg font-medium transition ${
+                    currentPage === page
+                      ? "bg-emerald-600 text-white"
+                      : "border border-slate-200 bg-white text-slate-600 hover:border-emerald-500 hover:text-emerald-600"
+                  }`}
+                >
+                  {page}
+                </button>
+              );
+            })}
+
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => p + 1)}
+              disabled={currentPage === totalPages}
+              aria-label="Next page"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
+            >
+              <ChevronRight size={18} />
+            </button>
           </div>
         )}
       </div>

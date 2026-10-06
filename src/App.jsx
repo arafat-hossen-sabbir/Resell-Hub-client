@@ -1,7 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Dashboard from "./pages/dashboard/Dashboard";
+import DashboardPage from "./pages/dashboard/DashboardPage";
 import Home from "./pages/public/Home";
 import Products from "./pages/public/Products";
 import ProductDetails from "./pages/public/ProductDetails";
@@ -25,14 +27,62 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <DashboardLayout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<Dashboard />} />
+            <Route
+              path="products"
+              element={
+                <DashboardPage
+                  title="My Products"
+                  description="Manage the products you have listed."
+                />
+              }
+            />
+            <Route
+              path="orders"
+              element={
+                <DashboardPage
+                  title="My Orders"
+                  description="Track your purchases and sales."
+                />
+              }
+            />
+            <Route
+              path="wishlist"
+              element={
+                <DashboardPage
+                  title="Wishlist"
+                  description="Products you have saved for later."
+                />
+              }
+            />
+            <Route
+              path="analytics"
+              element={
+                <DashboardPage
+                  title="Analytics"
+                  description="See how your listings are performing."
+                />
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <DashboardPage
+                  title="Profile Settings"
+                  description="Update your personal information."
+                />
+              }
+            />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

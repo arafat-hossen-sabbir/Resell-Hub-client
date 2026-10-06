@@ -2,20 +2,19 @@ import { Link } from "react-router-dom";
 import {
   ArrowRight,
   Bike,
-  BookOpen,
   Laptop,
   Shirt,
   Smartphone,
   Sofa,
 } from "lucide-react";
+import { products } from "../../data/products";
 
 const categories = [
-  { name: "Mobiles", icon: Smartphone, count: "1.2k items" },
-  { name: "Laptops", icon: Laptop, count: "860 items" },
-  { name: "Fashion", icon: Shirt, count: "2.4k items" },
-  { name: "Furniture", icon: Sofa, count: "540 items" },
-  { name: "Bikes", icon: Bike, count: "320 items" },
-  { name: "Books", icon: BookOpen, count: "1.8k items" },
+  { name: "Electronics", icon: Laptop },
+  { name: "Mobile Phones", icon: Smartphone },
+  { name: "Furniture", icon: Sofa },
+  { name: "Fashion", icon: Shirt },
+  { name: "Sports", icon: Bike },
 ];
 
 const CategorySection = () => {
@@ -31,27 +30,33 @@ const CategorySection = () => {
           </p>
         </div>
         <Link
-          to="/categories"
+          to="/products"
           className="hidden items-center gap-1 font-semibold text-emerald-600 hover:text-emerald-700 sm:inline-flex"
         >
           View all <ArrowRight size={18} />
         </Link>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-        {categories.map(({ name, icon: Icon, count }) => (
-          <Link
-            key={name}
-            to={`/products?category=${encodeURIComponent(name)}`}
-            className="group rounded-2xl border border-slate-200 bg-white p-5 text-center transition hover:-translate-y-1 hover:border-emerald-500 hover:shadow-lg"
-          >
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 transition group-hover:bg-emerald-600 group-hover:text-white">
-              <Icon size={26} />
-            </div>
-            <h3 className="mt-4 font-semibold text-slate-900">{name}</h3>
-            <p className="mt-1 text-xs text-slate-500">{count}</p>
-          </Link>
-        ))}
+      <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+        {categories.map(({ name, icon: Icon }) => {
+          const count = products.filter((p) => p.category === name).length;
+
+          return (
+            <Link
+              key={name}
+              to={`/products?category=${encodeURIComponent(name)}`}
+              className="group rounded-2xl border border-slate-200 bg-white p-5 text-center transition hover:-translate-y-1 hover:border-emerald-500 hover:shadow-lg"
+            >
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 transition group-hover:bg-emerald-600 group-hover:text-white">
+                <Icon size={26} />
+              </div>
+              <h3 className="mt-4 font-semibold text-slate-900">{name}</h3>
+              <p className="mt-1 text-xs text-slate-500">
+                {count} {count === 1 ? "item" : "items"}
+              </p>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

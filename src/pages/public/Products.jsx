@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   ChevronLeft,
@@ -6,72 +6,110 @@ import {
   Search,
   SlidersHorizontal,
 } from "lucide-react";
+import api from "../../api/axios";
 import ProductCard from "../../components/products/ProductCard";
-import { products } from "../../data/products";
+import ProductSkeleton from "../../components/products/ProductSkeleton";
+import { categories } from "../../data/categories";
 
-const categories = ["All", ...new Set(products.map((p) => p.category))];
 const PRODUCTS_PER_PAGE = 8;
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [sort, setSort] = useState("default");
-  const [currentPage, setCurrentPage] = useState(1);
 
   const search = searchParams.get("search") || "";
   const category = searchParams.get("category") || "All";
+  const sort = searchParams.get("sort") || "newest";
+  const page = Math.max(parseInt(searchParams.get("page"), 10) || 1, 1);
 
-  const updateParam = (key, value) => {
-    const next = new URLSearchParams(searchParams);
-    if (value && value !== "All") {
-      next.set(key, value);
-    } else {
-      next.delete(key);
-    }
-    setSearchParams(next, { replace: true });
-    setCurrentPage(1);
+  const [searchInput, setSearchInput] = useState(search);
+  const [state, setState] = useState({
+    products: [],
+    pagination: null,
+    loading: true,
+    error: "",
+  });
+
+  const setParams = (updates) => {
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+
+        Object.entries(updates).forEach(([key, value]) => {
+          const isDefault =
+            !value ||
+            value === "All" ||
+            value === "newest" ||
+            (key === "page" && value === 1);
+
+          if (isDefault) {
+            next.delete(key);
+          } else {
+            next.set(key, String(value));
+          }
+        });
+
+        return next;
+      },
+      { replace: true },
+    );
   };
 
-  const filteredProducts = useMemo(() => {
-    const term = search.trim().toLowerCase();
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
 
-    let result = products.filter((product) => {
-      const matchesSearch =
-        product.title.toLowerCase().includes(term) ||
-        product.category.toLowerCase().includes(term);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const value = searchInput.trim();
+      if (value !== search) {
+        setParams({ search: value, page: 1 });
+      }
+    }, 400);
 
-      const matchesCategory =
-        category === "All" || product.category === category;
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
-      return matchesSearch && matchesCategory;
-    });
+  useEffect(() => {
+    const controller = new AbortController();
 
-    if (sort === "low-high") {
-      result = [...result].sort((a, b) => a.price - b.price);
-    }
+    setState((current) => ({ ...current, loading: true, error: "" }));
 
-    if (sort === "high-low") {
-      result = [...result].sort((a, b) => b.price - a.price);
-    }
+    api
+      .get("/products", {
+        params: { search, category, sort, page, limit: PRODUCTS_PER_PAGE },
+        signal: controller.signal,
+      })
+      .then(({ data }) => {
+        setState({
+          products: data.products,
+          pagination: data.pagination,
+          loading: false,
+          error: "",
+        });
+      })
+      .catch((error) => {
+        if (error.code === "ERR_CANCELED") return;
+        setState((current) => ({
+          ...current,
+          loading: false,
+          error: "Products could not be loaded. Please try again.",
+        }));
+      });
 
-    return result;
-  }, [search, category, sort]);
+    return () => controller.abort();
+  }, [search, category, sort, page]);
 
-  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
-  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
-  const currentProducts = filteredProducts.slice(
-    startIndex,
-    startIndex + PRODUCTS_PER_PAGE,
-  );
-
-  // Scroll to top whenever the page changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentPage]);
+  }, [page]);
+
+  const { products, pagination, loading, error } = state;
+  const totalPages = pagination?.totalPages || 0;
+  const hasFilters = search || category !== "All" || sort !== "newest";
 
   const clearFilters = () => {
+    setSearchInput("");
     setSearchParams({}, { replace: true });
-    setSort("default");
-    setCurrentPage(1);
   };
 
   return (
@@ -101,8 +139,8 @@ const Products = () => {
 
               <input
                 type="text"
-                value={search}
-                onChange={(e) => updateParam("search", e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search by product name or category..."
                 className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
               />
@@ -116,9 +154,12 @@ const Products = () => {
 
               <select
                 value={category}
-                onChange={(e) => updateParam("category", e.target.value)}
+                onChange={(e) =>
+                  setParams({ category: e.target.value, page: 1 })
+                }
                 className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-8 outline-none focus:border-emerald-500"
               >
+                <option value="All">All</option>
                 {categories.map((item) => (
                   <option key={item} value={item}>
                     {item}
@@ -129,33 +170,36 @@ const Products = () => {
 
             <select
               value={sort}
-              onChange={(e) => {
-                setSort(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => setParams({ sort: e.target.value, page: 1 })}
               className="rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-emerald-500"
             >
-              <option value="default">Sort by Price</option>
-              <option value="low-high">Price: Low to High</option>
-              <option value="high-low">Price: High to Low</option>
+              <option value="newest">Newest first</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
             </select>
           </div>
         </div>
 
         <div className="mt-8 flex items-center justify-between">
           <p className="text-sm text-slate-500">
-            Showing{" "}
-            <span className="font-semibold text-slate-800">
-              {currentProducts.length}
-            </span>{" "}
-            of{" "}
-            <span className="font-semibold text-slate-800">
-              {filteredProducts.length}
-            </span>{" "}
-            products
+            {pagination ? (
+              <>
+                Showing{" "}
+                <span className="font-semibold text-slate-800">
+                  {products.length}
+                </span>{" "}
+                of{" "}
+                <span className="font-semibold text-slate-800">
+                  {pagination.totalProducts}
+                </span>{" "}
+                products
+              </>
+            ) : (
+              "Loading products..."
+            )}
           </p>
 
-          {(search || category !== "All" || sort !== "default") && (
+          {hasFilters && (
             <button
               type="button"
               onClick={clearFilters}
@@ -166,10 +210,20 @@ const Products = () => {
           )}
         </div>
 
-        {currentProducts.length > 0 ? (
+        {loading ? (
           <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {currentProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {Array.from({ length: PRODUCTS_PER_PAGE }, (_, index) => (
+              <ProductSkeleton key={index} />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="mt-8 rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center text-slate-500 shadow-sm">
+            {error}
+          </div>
+        ) : products.length > 0 ? (
+          <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => (
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         ) : (
@@ -188,8 +242,8 @@ const Products = () => {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
             <button
               type="button"
-              onClick={() => setCurrentPage((p) => p - 1)}
-              disabled={currentPage === 1}
+              onClick={() => setParams({ page: page - 1 })}
+              disabled={page === 1}
               aria-label="Previous page"
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
             >
@@ -197,28 +251,28 @@ const Products = () => {
             </button>
 
             {Array.from({ length: totalPages }, (_, index) => {
-              const page = index + 1;
+              const number = index + 1;
 
               return (
                 <button
-                  key={page}
+                  key={number}
                   type="button"
-                  onClick={() => setCurrentPage(page)}
+                  onClick={() => setParams({ page: number })}
                   className={`h-10 w-10 rounded-lg font-medium transition ${
-                    currentPage === page
+                    page === number
                       ? "bg-emerald-600 text-white"
                       : "border border-slate-200 bg-white text-slate-600 hover:border-emerald-500 hover:text-emerald-600"
                   }`}
                 >
-                  {page}
+                  {number}
                 </button>
               );
             })}
 
             <button
               type="button"
-              onClick={() => setCurrentPage((p) => p + 1)}
-              disabled={currentPage === totalPages}
+              onClick={() => setParams({ page: page + 1 })}
+              disabled={page === totalPages}
               aria-label="Next page"
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
             >

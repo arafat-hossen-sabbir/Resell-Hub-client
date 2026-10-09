@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { MapPin, Star } from "lucide-react";
+import { MapPin, Package, Star } from "lucide-react";
+import { formatPrice } from "../../utils/format";
 
 const ProductCard = ({ product }) => {
   const {
-    id,
+    _id,
     title,
     category,
     condition,
@@ -11,21 +12,28 @@ const ProductCard = ({ product }) => {
     rating,
     reviews,
     location,
-    image,
+    images,
   } = product;
+  const image = images?.[0];
 
   return (
     <Link
-      to={`/products/${id}`}
+      to={`/products/${_id}`}
       className="group block overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl"
     >
       <div className="relative h-48 overflow-hidden bg-slate-100">
-        <img
-          src={image}
-          alt={title}
-          loading="lazy"
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-        />
+        {image ? (
+          <img
+            src={image}
+            alt={title}
+            loading="lazy"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-slate-300">
+            <Package size={48} />
+          </div>
+        )}
         <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-semibold text-emerald-700 shadow-sm">
           {condition}
         </span>
@@ -41,19 +49,23 @@ const ProductCard = ({ product }) => {
         </h3>
 
         <div className="mt-2 flex items-center gap-3 text-sm text-slate-500">
-          <span className="flex items-center gap-1">
-            <Star size={14} fill="currentColor" className="text-amber-500" />
-            <span className="font-medium text-slate-700">{rating}</span>
-            <span>({reviews})</span>
-          </span>
-          <span className="flex items-center gap-1">
-            <MapPin size={14} />
-            {location}
-          </span>
+          {rating ? (
+            <span className="flex items-center gap-1">
+              <Star size={14} fill="currentColor" className="text-amber-500" />
+              <span className="font-medium text-slate-700">{rating}</span>
+              {reviews ? <span>({reviews})</span> : null}
+            </span>
+          ) : null}
+          {location ? (
+            <span className="flex items-center gap-1">
+              <MapPin size={14} />
+              {location}
+            </span>
+          ) : null}
         </div>
 
         <p className="mt-4 text-lg font-bold text-emerald-600">
-          ৳ {price.toLocaleString("en-US")}
+          {formatPrice(price)}
         </p>
       </div>
     </Link>

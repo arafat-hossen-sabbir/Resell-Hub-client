@@ -7,15 +7,15 @@ import {
   Smartphone,
   Sofa,
 } from "lucide-react";
-import { products } from "../../data/products";
+import { categories } from "../../data/categories";
 
-const categories = [
-  { name: "Electronics", icon: Laptop },
-  { name: "Mobile Phones", icon: Smartphone },
-  { name: "Furniture", icon: Sofa },
-  { name: "Fashion", icon: Shirt },
-  { name: "Sports", icon: Bike },
-];
+const icons = {
+  Electronics: Laptop,
+  "Mobile Phones": Smartphone,
+  Furniture: Sofa,
+  Fashion: Shirt,
+  Sports: Bike,
+};
 
 const CategorySection = () => {
   return (
@@ -38,8 +38,8 @@ const CategorySection = () => {
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-        {categories.map(({ name, icon: Icon }) => {
-          const count = products.filter((p) => p.category === name).length;
+        {categories.map((name) => {
+          const Icon = icons[name] || Laptop;
 
           return (
             <Link
@@ -51,9 +51,7 @@ const CategorySection = () => {
                 <Icon size={26} />
               </div>
               <h3 className="mt-4 font-semibold text-slate-900">{name}</h3>
-              <p className="mt-1 text-xs text-slate-500">
-                {count} {count === 1 ? "item" : "items"}
-              </p>
+              <p className="mt-1 text-xs text-slate-500">Browse items</p>
             </Link>
           );
         })}

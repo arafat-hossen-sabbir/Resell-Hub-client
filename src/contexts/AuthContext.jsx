@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -9,6 +9,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../firebase/firebase.config";
+import { clearSession, syncSession } from "../api/session";
 
 const AuthContext = createContext(null);
 
@@ -17,20 +18,26 @@ const googleProvider = new GoogleAuthProvider();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const registering = useRef(false);
 
   const registerUser = async (name, email, password) => {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
+    registering.current = true;
 
-    await updateProfile(result.user, {
-      displayName: name,
-    });
+    try {
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
 
-    setUser({
-      ...result.user,
-      displayName: name,
-    });
+      await updateProfile(result.user, { displayName: name });
+      await syncSession(auth.currentUser, name);
+      setUser(auth.currentUser);
 
-    return result.user;
+      return auth.currentUser;
+    } finally {
+      registering.current = false;
+    }
   };
 
   const loginUser = (email, password) => {
@@ -41,12 +48,16 @@ export const AuthProvider = ({ children }) => {
     return signInWithPopup(auth, googleProvider);
   };
 
-  const logoutUser = () => {
-    return signOut(auth);
+  const logoutUser = async () => {
+    clearSession();
+    await signOut(auth);
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (registering.current) return;
+
+      await syncSession(currentUser);
       setUser(currentUser);
       setLoading(false);
     });

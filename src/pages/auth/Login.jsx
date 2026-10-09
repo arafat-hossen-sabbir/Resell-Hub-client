@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Login = () => {
   const { loginUser, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from;
+  const target = from ? `${from.pathname}${from.search || ""}` : "/";
 
   const [form, setForm] = useState({
     email: "",
@@ -28,7 +32,7 @@ const Login = () => {
 
     try {
       await loginUser(form.email, form.password);
-      navigate("/");
+      navigate(target, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -42,7 +46,7 @@ const Login = () => {
 
     try {
       await loginWithGoogle();
-      navigate("/");
+      navigate(target, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -114,7 +118,11 @@ const Login = () => {
 
         <p className="mt-6 text-center text-sm text-slate-500">
           Don't have an account?{" "}
-          <Link to="/register" className="font-semibold text-emerald-600">
+          <Link
+            to="/register"
+            state={location.state}
+            className="font-semibold text-emerald-600"
+          >
             Register
           </Link>
         </p>

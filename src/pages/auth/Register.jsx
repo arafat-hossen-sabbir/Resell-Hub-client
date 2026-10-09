@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Register = () => {
   const { registerUser, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from;
+  const target = from ? `${from.pathname}${from.search || ""}` : "/";
 
   const [form, setForm] = useState({
     name: "",
@@ -29,7 +33,7 @@ const Register = () => {
 
     try {
       await registerUser(form.name, form.email, form.password);
-      navigate("/");
+      navigate(target, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -43,7 +47,7 @@ const Register = () => {
 
     try {
       await loginWithGoogle();
-      navigate("/");
+      navigate(target, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -128,7 +132,11 @@ const Register = () => {
 
         <p className="mt-6 text-center text-sm text-slate-500">
           Already have an account?{" "}
-          <Link to="/login" className="font-semibold text-emerald-600">
+          <Link
+            to="/login"
+            state={location.state}
+            className="font-semibold text-emerald-600"
+          >
             Login
           </Link>
         </p>

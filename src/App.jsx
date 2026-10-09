@@ -4,6 +4,8 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Dashboard from "./pages/dashboard/Dashboard";
 import DashboardPage from "./pages/dashboard/DashboardPage";
+import MyOrders from "./pages/dashboard/MyOrders";
+import Wishlist from "./pages/dashboard/Wishlist";
 import Home from "./pages/public/Home";
 import Products from "./pages/public/Products";
 import ProductDetails from "./pages/public/ProductDetails";
@@ -46,24 +48,8 @@ function App() {
                 />
               }
             />
-            <Route
-              path="orders"
-              element={
-                <DashboardPage
-                  title="My Orders"
-                  description="Track your purchases and sales."
-                />
-              }
-            />
-            <Route
-              path="wishlist"
-              element={
-                <DashboardPage
-                  title="Wishlist"
-                  description="Products you have saved for later."
-                />
-              }
-            />
+            <Route path="orders" element={<MyOrders />} />
+            <Route path="wishlist" element={<Wishlist />} />
             <Route
               path="analytics"
               element={

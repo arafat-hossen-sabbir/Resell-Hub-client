@@ -6,6 +6,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import MyOrders from "./pages/dashboard/MyOrders";
 import Wishlist from "./pages/dashboard/Wishlist";
+import MyProducts from "./pages/dashboard/MyProducts";
 import Home from "./pages/public/Home";
 import Products from "./pages/public/Products";
 import ProductDetails from "./pages/public/ProductDetails";
@@ -39,17 +40,18 @@ function App() {
             }
           >
             <Route index element={<Dashboard />} />
+            <Route path="orders" element={<MyOrders />} />
+            <Route path="wishlist" element={<Wishlist />} />
+            <Route path="products" element={<MyProducts />} />
             <Route
-              path="products"
+              path="sales"
               element={
                 <DashboardPage
-                  title="My Products"
-                  description="Manage the products you have listed."
+                  title="Sales Orders"
+                  description="Orders placed on your products."
                 />
               }
             />
-            <Route path="orders" element={<MyOrders />} />
-            <Route path="wishlist" element={<Wishlist />} />
             <Route
               path="analytics"
               element={

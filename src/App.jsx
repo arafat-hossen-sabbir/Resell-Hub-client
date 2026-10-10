@@ -13,7 +13,7 @@ import ProductDetails from "./pages/public/ProductDetails";
 import Categories from "./pages/public/Categories";
 import About from "./pages/public/About";
 import Contact from "./pages/public/Contact";
-
+import SellerOrders from "./pages/dashboard/SellerOrders";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
@@ -43,15 +43,7 @@ function App() {
             <Route path="orders" element={<MyOrders />} />
             <Route path="wishlist" element={<Wishlist />} />
             <Route path="products" element={<MyProducts />} />
-            <Route
-              path="sales"
-              element={
-                <DashboardPage
-                  title="Sales Orders"
-                  description="Orders placed on your products."
-                />
-              }
-            />
+            <Route path="sales" element={<SellerOrders />} />
             <Route
               path="analytics"
               element={

@@ -49,7 +49,7 @@ const AdminDashboard = () => {
     let active = true;
 
     api
-      .get("/admin-dashboard/stats")
+      .get("/admin/stats")
       .then(({ data }) => {
         if (active) setStats(data.stats);
       })

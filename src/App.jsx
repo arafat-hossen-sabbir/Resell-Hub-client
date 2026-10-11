@@ -17,6 +17,7 @@ import SellerOrders from "./pages/dashboard/SellerOrders";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Analytics from "./pages/dashboard/Analytics";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             <Route path="products" element={<MyProducts />} />
             <Route path="sales" element={<SellerOrders />} />
             <Route path="analytics" element={<Analytics />} />
+            <Route path="admin" element={<AdminDashboard />} />
             <Route
               path="profile"
               element={

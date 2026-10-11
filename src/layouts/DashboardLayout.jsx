@@ -7,6 +7,7 @@ import {
   Package,
   Receipt,
   Settings,
+  ShieldCheck,
   ShoppingBag,
   Store,
 } from "lucide-react";
@@ -27,6 +28,10 @@ const sellerMenu = [
 
 const startSellingMenu = [
   { name: "Start Selling", path: "/dashboard/products", icon: Store },
+];
+
+const adminMenu = [
+  { name: "Admin Overview", path: "/dashboard/admin", icon: ShieldCheck },
 ];
 
 const accountMenu = [
@@ -84,6 +89,7 @@ const DashboardLayout = () => {
   }, []);
 
   const isSeller = ["seller", "admin"].includes(profile?.role);
+  const isAdmin = profile?.role === "admin";
 
   return (
     <section className="min-h-[calc(100vh-64px)] bg-slate-50">
@@ -101,6 +107,7 @@ const DashboardLayout = () => {
             title="Selling"
             items={isSeller ? sellerMenu : startSellingMenu}
           />
+          {isAdmin && <MenuGroup title="Administration" items={adminMenu} />}
           <MenuGroup title="Account" items={accountMenu} />
         </aside>
 

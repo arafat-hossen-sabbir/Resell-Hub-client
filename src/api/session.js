@@ -1,7 +1,8 @@
 import axios from "axios";
 
 export const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  import.meta.env.VITE_API_URL ||
+  "https://resell-hub-server-rpp3.onrender.com/api";
 
 const TOKEN_KEY = "access-token";
 const USER_KEY = "resell-user";

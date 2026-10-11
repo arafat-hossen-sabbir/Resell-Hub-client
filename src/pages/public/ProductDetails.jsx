@@ -146,7 +146,7 @@ const ProductDetails = () => {
     setSubmitting(true);
 
     try {
-      await api.post("/orders", {
+      const { data } = await api.post("/orders", {
         productId: product._id,
         quantity: Number(form.quantity),
         shippingAddress: {
@@ -157,11 +157,7 @@ const ProductDetails = () => {
       });
 
       setCheckoutOpen(false);
-      await showSuccess(
-        "Order placed",
-        "The seller will review your order shortly.",
-      );
-      navigate("/dashboard/orders");
+      navigate(`/checkout/${data.order._id}`);
     } catch (error) {
       showError(getErrorMessage(error, "Unable to place the order."));
     } finally {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { Package, Pencil, Plus, Search, Store, Trash2 } from "lucide-react";
 import api from "../../api/axios";
 import ProductFormModal from "../../components/dashboard/ProductFormModal";
@@ -20,6 +20,7 @@ const FILTERS = ["All", "approved", "pending", "rejected"];
 const MyProducts = () => {
   const { profile, setProfile, ready } = useOutletContext();
   const isSeller = ["seller", "admin"].includes(profile?.role);
+  const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -210,7 +211,7 @@ const MyProducts = () => {
 
         <button
           type="button"
-          onClick={() => setModal({ product: null })}
+          onClick={() => navigate("/dashboard/add-product")}
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-700"
         >
           <Plus size={18} />
@@ -262,7 +263,7 @@ const MyProducts = () => {
           {products.length === 0 && (
             <button
               type="button"
-              onClick={() => setModal({ product: null })}
+              onClick={() => navigate("/dashboard/add-product")}
               className="mt-4 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
             >
               Add your first product

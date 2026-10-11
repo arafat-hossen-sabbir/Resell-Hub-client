@@ -28,3 +28,16 @@ export const confirmAction = async ({ title, text, confirmText }) => {
 
   return result.isConfirmed;
 };
+
+export const askReason = async (title) => {
+  const result = await Swal.fire({
+    title,
+    input: "textarea",
+    inputPlaceholder: "Reason (optional)",
+    showCancelButton: true,
+    confirmButtonText: "Reject product",
+    confirmButtonColor: "#dc2626",
+  });
+
+  return result.isConfirmed ? result.value || "" : null;
+};

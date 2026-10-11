@@ -8,6 +8,7 @@ import {
   getErrorMessage,
   orderStatusStyles,
 } from "../../utils/format";
+import SellerOverview from "../../components/dashboard/SellerOverview";
 
 const ACTIVE_STATUSES = ["Pending", "Accepted", "Processing", "Shipped"];
 const NOT_SPENT = ["Cancelled", "Rejected"];
@@ -99,6 +100,8 @@ const Dashboard = () => {
       <p className="mt-2 text-slate-500">
         Here is an overview of your marketplace activity.
       </p>
+
+      {["seller", "admin"].includes(profile?.role) && <SellerOverview />}
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map(({ title, value, icon: Icon }) => (

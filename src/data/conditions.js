@@ -1,0 +1,1 @@
+export const conditions = ["Used", "Like New", "Refurbished"];

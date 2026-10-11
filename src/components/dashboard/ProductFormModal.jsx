@@ -4,7 +4,7 @@ import api from "../../api/axios";
 import { categories } from "../../data/categories";
 import { getErrorMessage } from "../../utils/format";
 
-const conditions = ["Like New", "Good", "Fair"];
+const conditions = ["Used", "Like New", "Refurbished"];
 
 const inputClass =
   "w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100";
@@ -169,7 +169,10 @@ const ProductFormModal = ({ product, onClose, onSaved }) => {
               onChange={(e) => update("condition", e.target.value)}
               className={inputClass}
             >
-              {conditions.map((item) => (
+              {(conditions.includes(form.condition)
+                ? conditions
+                : [form.condition, ...conditions]
+              ).map((item) => (
                 <option key={item} value={item}>
                   {item}
                 </option>

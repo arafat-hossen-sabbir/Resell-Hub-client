@@ -16,6 +16,7 @@ import Contact from "./pages/public/Contact";
 import SellerOrders from "./pages/dashboard/SellerOrders";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Analytics from "./pages/dashboard/Analytics";
 
 function App() {
   return (
@@ -44,15 +45,7 @@ function App() {
             <Route path="wishlist" element={<Wishlist />} />
             <Route path="products" element={<MyProducts />} />
             <Route path="sales" element={<SellerOrders />} />
-            <Route
-              path="analytics"
-              element={
-                <DashboardPage
-                  title="Analytics"
-                  description="See how your listings are performing."
-                />
-              }
-            />
+            <Route path="analytics" element={<Analytics />} />
             <Route
               path="profile"
               element={

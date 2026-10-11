@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
+import PageLoader from "../components/PageLoader";
 import { useAuth } from "../contexts/AuthContext";
 
 const ProtectedRoute = ({ children }) => {
@@ -6,11 +7,7 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (!user) {

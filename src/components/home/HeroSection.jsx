@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   Recycle,
@@ -8,15 +9,31 @@ import {
   Tag,
   Wallet,
 } from "lucide-react";
+import usePublicStats from "../../hooks/usePublicStats";
+
+const show = (value) =>
+  value === undefined || value === null ? "—" : value.toLocaleString("en-US");
 
 const HeroSection = () => {
+  const stats = usePublicStats();
+
+  const items = [
+    { label: "Products Listed", value: stats?.products },
+    { label: "Trusted Sellers", value: stats?.sellers },
+    { label: "Completed Orders", value: stats?.completedOrders },
+  ];
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-teal-50">
       <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-200/40 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full bg-teal-200/40 blur-3xl" />
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-24">
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-4 py-1.5 text-sm font-medium text-emerald-700 shadow-sm">
             <Recycle size={16} />
             Buy Smart. Sell Easy.
@@ -53,22 +70,28 @@ const HeroSection = () => {
           </div>
 
           <div className="mt-10 flex flex-wrap gap-8">
-            <div>
-              <p className="text-2xl font-bold text-slate-900">10k+</p>
-              <p className="text-sm text-slate-500">Active Users</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-900">25k+</p>
-              <p className="text-sm text-slate-500">Products Listed</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-900">64</p>
-              <p className="text-sm text-slate-500">Districts Covered</p>
-            </div>
+            {items.map(({ label, value }, index) => (
+              <motion.div
+                key={label}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + index * 0.12 }}
+              >
+                <p className="text-2xl font-bold text-slate-900">
+                  {show(value)}
+                </p>
+                <p className="text-sm text-slate-500">{label}</p>
+              </motion.div>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="relative mx-auto hidden w-full max-w-md lg:block">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="relative mx-auto hidden w-full max-w-md lg:block"
+        >
           <div className="absolute inset-0 rotate-3 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-400 opacity-20" />
 
           <div className="relative rounded-3xl border border-slate-100 bg-white p-6 shadow-2xl">
@@ -100,18 +123,26 @@ const HeroSection = () => {
             </div>
           </div>
 
-          <div className="absolute -left-6 top-10 flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow-xl">
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ repeat: Infinity, duration: 3 }}
+            className="absolute -left-6 top-10 flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow-xl"
+          >
             <ShieldCheck size={20} className="text-emerald-600" />
             <span className="text-sm font-medium text-slate-700">Verified</span>
-          </div>
+          </motion.div>
 
-          <div className="absolute -right-4 bottom-12 flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow-xl">
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 3.4 }}
+            className="absolute -right-4 bottom-12 flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow-xl"
+          >
             <Wallet size={20} className="text-emerald-600" />
             <span className="text-sm font-medium text-slate-700">
               Save up to 70%
             </span>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
